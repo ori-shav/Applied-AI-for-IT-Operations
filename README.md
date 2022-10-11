@@ -49,3 +49,32 @@ First we load the CSV into a Pandas data frame using the read_csv method. We the
    The scores are a tuple, with the first number indicating the document ID and the second number the similarity score. The higher the score, the more matching is this question to the document in the dataset. To find the top matching question, we do an argsort to sort the similarity scores based on the score and return the index of the document in descending order.
    We use the question as the document for training, but we can instead use the entire content of the FAQ article as the document also. This would require a lot more processing, but can lead to more accurate results.
     
+## Use Case 3: Time series forecasting
+Recurrent neural network (RNN) and long short-term memory (LSTM)
+https://en.wikipedia.org/wiki/Recurrent_neural_network
+https://en.wikipedia.org/wiki/Long_short-term_memory
+
+## Other usecases on ITOps
+
+### Anomaly detection
+ Anomaly detection in general tries to find if something out of the ordinary is happening. This manifests in various use cases for ITOps.
+ This manifests in various use cases for ITOps. Intrusion detection aims to look at network traffic and identify if someone is trying to breach the network. The same can also apply for looking at error trends, and see if we are seeing something more than the threshold.
+ Anomaly detection requires analyzing huge volumes of incoming audit and trace logs to see if exception patterns occur, but it's not easy to do that manually, given the volume and speed of data generated and the need for quick identification.
+ Given a TCP request access log with information about the request origin, destination, and content, we want to identify if this is an intrusion attempt or not. Rather than a Boolean R1, we want to predict an intrusion score to specify the probability of intrusion. The input training data for this would be the access logs that contain feature variables like a unique request ID, source IP and port, the protocol used, target IP and port, payload size, and encryption. The target variable would be a flag that indicates if the request was an intrusion or not.
+ The use case uses structured data, so it does not require text processing techniques. It predicts an output class, so it's a classification problem. We, in addition, want to predict a score instead of a class. 
+ pre-processing needed: 
+ 1. We need to do one-hot encoding of the target variable as well as class-based feature variables like IP addresses, ports, and encryption flags. 
+ 2. For numeric data like payload size, we want to do centering and scaling to normalize the data. Typically in a raw dataset, the number of such actual intrusions might be very small, so there will be a lot more zeros than ones. This results in an imbalance between the output classes and may create bias towards the class with the largest sample set, which in this case would be zero, so it's recommended to remove the samples from the largest class in order to balance the classes. 
+ 3. For modeling, this use case is similar to the incident root cost analysis use case. Because we use one-hot encoding on features with a large number of classes like IP addresses, we may have a large number of input feature variables. We can additionally add convolution and max pooling layers to reduce the diamond chains of the input. We then add a couple of dense layers to this. 
+ Given that we want only a score, we will not use a softmax layer. We could alternatively use a softmax layer if we want to predict a one or zero directly.
+
+https://towardsdatascience.com/anomaly-detection-for-dummies-15f148e559c1
+
+### Incident categorization
+ Identifying the category of the problem and directing it to the right resource is a key requirement for fast response times.
+ AI can help to understand text and automatically categorize the problem, which in turn can be used to automatically route the incident to the right resource. So the goal of incident categorization is this. Given an incident narrative in free format text, identify a list of categories this incident belongs to. The categories are of predefined different set and each incident can be identified under multiple categories. 
+
+### Network traffic analysis
+https://github.com/networkx/networkx
+
+## ITOps Best Practices
