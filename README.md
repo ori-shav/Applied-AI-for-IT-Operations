@@ -18,4 +18,34 @@ First we load the CSV into a Pandas data frame using the read_csv method. We the
   When a new incident happen, we typically identify the symptoms of the incident first, and populate the related feature variables here, like CPU load, memory load, delays and error codes. We then pass these as an array to the model's predict classes function. This function will return a numeric value for the root cause. We then translate the numeric value into a label using the inverse transform function on the encoder. 
 
   ## Use Case 2: Self-Help Service Desk
-  
+   We will use a data set that contains a list of FAQ articles and a corresponding set of questions. The FAQ articles can have multiple questions associated with them. We will then build a natural language model that can take a new user question and find the closest question in the dataset.
+
+   Latent semantic analysis (LSA) and latent semantic indexing (LSI)
+
+   Machine learning algorithms work only with numeric data. They do not understand text. One of the most recent and popular techniques to convert text into its numeric representation is called Latent Semantic Analysis or LSA. It can use the vectorized representation of documents to analyze relationships and arrive at a similarity model. It builds an index using the latent semantic indexing, or LSI technique, which measures the relationships between terms in an unstructured collection of text. The index can then be used to find similar documents based on commonly occurring phrases between the documents.
+
+   https://en.wikipedia.org/wiki/Latent_semantic_analysis
+
+   The CSV has two columns. The first column called Question contains a natural language question that a user would ask. The second column, LinkToAnswer, contains a link to an FAQ article that provides answers to this question. Please note that this is a really small dataset created for demonstration purposes. The same question may be phrased in multiple ways in order to help the model learn multiple ways in which the question can be asked.
+
+   Building a document vector
+   We have a list of questions and related FAQ links in the data set. We first load this data set into a Panda's data frame.  we have a list of questions and related FAQ links in the data set. We first load this data set into a Panda's data frame.
+   First convert all documents into lowercase. Then we remove stop words in the document using the remove stop words function in the NLTK package. We also remove the question mark character. Then we split the document into individual words and return it. Now we call the process document function for each question or document in the documents variable. This returns a document vector which gets stored in doc_vectors. 
+
+   Creating the LSI model
+
+   Latent semantic analysis (LSA) is a technique in natural language processing, in particular distributional semantics, of analyzing relationships between a set of documents and the terms they contain by producing a set of concepts related to the documents and terms. LSA assumes that words that are close in meaning will occur in similar pieces of text.
+
+   LSA can use a document-term matrix which describes the occurrences of terms in documents; it is a sparse matrix whose rows correspond to terms and whose columns correspond to documents. A typical example of the weighting of the elements of the matrix is tf-idf (term frequency–inverse document frequency): the weight of an element of the matrix is proportional to the number of times the terms appear in each document, where rare terms are upweighted to reflect their relative importance.
+
+   First we create a dictionary based on the document vectors. The dictionary is a unique list of words found in these document vectors. To do this, we use the `corpora.dictionary method`. This generates a dictionary with words and corresponding identifiers.
+   Next convert the document vector into a corpus based on the identifiers in the dictionary. We use the `doc2bow` method to convert the vectors into this corpus. 
+   As we can see, each word in the document is mapped to a tuple. The first number in the tuple is the word identifier in the dictionary. The second number is the total number of times this word appears in this document. Now let's build the similarity index from LSI model method found in the gensim package.
+
+   The matrix lists the similarity code for this document with the other documents in the input. We have 10 input documents, so we get a 10 by 10 matrix. For example, the second array lists the similarity score of the second document with all other documents in this corpus. Its similarity to itself is one. The higher the similarity, the more related these documents are.
+
+   Recommending FAQs
+   First need to run this question through the same processing we did with the training dataset. We use the process document function to cleanse the question and then convert it into a corpus. Then we call the LSI method with this corpus as the index. It returns an equal and LSI model. Then we find the similarity of this model with all the other questions in our training dataset. This returns the similarity scores for this question to all other documents in the training dataset.
+   The scores are a tuple, with the first number indicating the document ID and the second number the similarity score. The higher the score, the more matching is this question to the document in the dataset. To find the top matching question, we do an argsort to sort the similarity scores based on the score and return the index of the document in descending order.
+   We use the question as the document for training, but we can instead use the entire content of the FAQ article as the document also. This would require a lot more processing, but can lead to more accurate results.
+    
